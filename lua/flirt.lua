@@ -5,6 +5,7 @@ F.opts = {
   default_resize_mappings = true,
   default_move_mappings = true,
   default_mouse_mappings = true,
+  prefer_keymap = false,
   exclude_fts = { 'cmp_menu', 'TelescopePrompt', 'prompt', 'hydra_hint' },
   custom_filter = function(buf, cfg) end,
   speed = 95,
@@ -166,7 +167,7 @@ F.setup = function(opts)
       is_popup = nil
     end
 
-    if vim.on_key and vim.keycode then
+    if vim.on_key and vim.keycode and not F.opts.prefer_keymap then
       local drg = vim.keycode("<LeftDrag>")
       local rel = vim.keycode("<LeftRelease>")
       vim.on_key(function(k)
