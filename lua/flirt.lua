@@ -117,7 +117,9 @@ F.setup = function(opts)
     F.opts.speed = math.abs(101 - F.opts.speed)
   end
 
-  vim.api.nvim_create_user_command(F.opts.close_command or 'Q', F.close, {})
+  if opts.close_command then
+    vim.api.nvim_create_user_command(F.opts.close_command or 'Q', F.close, {})
+  end
 
   if F.opts.default_move_mappings then
     vim.keymap.set('n', '<C-down>', function() F.move("down") end, {})
