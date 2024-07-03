@@ -104,6 +104,30 @@ F.move = function(dir)
   vim.api.nvim_win_set_config(0, conf)
 end
 
+F.on_drag = function()
+  local mouse_pos = vim.fn.getmousepos()
+  if not is_popup then
+    if vim.fn.win_gettype(mouse_pos.winid) == "popup" then
+      is_popup = true
+    else
+      return
+    end
+  end
+
+  -- 实现方式为: 第一次 drag 的时候, 记录初始位置, 第二次 drag 的时候才开始移动
+  -- 优点
+  if not w then
+    w = mouse_pos.winid
+    r = mouse_pos.winrow -- 起始位置: 鼠标在弹窗内的窗口坐标
+    c = mouse_pos.wincol
+  end
+
+  local cfg = vim.api.nvim_win_get_config(w)
+  cfg["row"] = mouse_pos.screenrow - r
+  cfg["col"] = mouse_pos.screencol - c
+  vim.api.nvim_win_set_config(w, cfg)
+end
+
 F.setup = function(opts)
   F.opts = vim.tbl_deep_extend("force", F.opts, opts or {})
   _open_win = vim.api.nvim_open_win
@@ -137,30 +161,7 @@ F.setup = function(opts)
   end
 
   if F.opts.default_mouse_mappings then
-    local on_drag = function()
-      local mouse_pos = vim.fn.getmousepos()
-      if not is_popup then
-        if vim.fn.win_gettype(mouse_pos.winid) == "popup" then
-          is_popup = true
-        else
-          return
-        end
-      end
-
-      -- 实现方式为: 第一次 drag 的时候, 记录初始位置, 第二次 drag 的时候才开始移动
-      -- 优点
-      if not w then
-        w = mouse_pos.winid
-        r = mouse_pos.winrow -- 起始位置: 鼠标在弹窗内的窗口坐标
-        c = mouse_pos.wincol
-      end
-
-      local cfg = vim.api.nvim_win_get_config(w)
-      cfg["row"] = mouse_pos.screenrow - r
-      cfg["col"] = mouse_pos.screencol - c
-      vim.api.nvim_win_set_config(w, cfg)
-    end
-
+    local on_drag = F.on_drag
     local on_release = function()
       vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, true, true), "n", true)
       w = nil
