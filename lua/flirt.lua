@@ -135,24 +135,26 @@ F.setup = function(opts)
 
   if F.opts.default_mouse_mappings then
     local on_drag = function()
-      local info = vim.fn.getmousepos()
+      local mouse_pos = vim.fn.getmousepos()
       if not is_popup then
-        if vim.fn.win_gettype(info.winid) == "popup" then
+        if vim.fn.win_gettype(mouse_pos.winid) == "popup" then
           is_popup = true
         else
           return
         end
       end
 
+      -- 实现方式为: 第一次 drag 的时候, 记录初始位置, 第二次 drag 的时候才开始移动
+      -- 优点
       if not w then
-        w = info.winid
-        r = info.winrow
-        c = info.wincol
+        w = mouse_pos.winid
+        r = mouse_pos.winrow -- 起始位置: 鼠标在弹窗内的窗口坐标
+        c = mouse_pos.wincol
       end
 
       local cfg = vim.api.nvim_win_get_config(w)
-      cfg["row"][false] = info.screenrow - r
-      cfg["col"][false] = info.screencol - c
+      cfg["row"] = mouse_pos.screenrow - r
+      cfg["col"] = mouse_pos.screencol - c
       vim.api.nvim_win_set_config(w, cfg)
     end
 
