@@ -163,7 +163,9 @@ F.setup = function(opts)
   if F.opts.default_mouse_mappings then
     local on_drag = F.on_drag
     local on_release = function()
-      --vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, true, true), "n", true)
+      if is_popup then
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, true, true), "n", true)
+      end
       w = nil
       is_popup = nil
     end
