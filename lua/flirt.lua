@@ -115,7 +115,7 @@ F.on_drag = function()
   end
 
   -- 实现方式为: 第一次 drag 的时候, 记录初始位置, 第二次 drag 的时候才开始移动
-  -- 优点
+  -- 优点是实现简单, 缺点是每次移动后, 光标会位移 1 格
   if not w then
     w = mouse_pos.winid
     r = mouse_pos.winrow -- 起始位置: 鼠标在弹窗内的窗口坐标
